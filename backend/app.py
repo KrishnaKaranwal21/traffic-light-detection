@@ -152,20 +152,18 @@ def run_detection(video_path, output_path="outputs/processed_output.mp4"):
 
 # ---------------- DEMO VIDEO HELPER ----------------
 def get_demo_video():
-    demo_dir = Path("demo_videos")
-    demo_dir.mkdir(exist_ok=True)
-    demo_path = demo_dir / "traffic_light_demo.mp4"
+    os.makedirs("demo_videos", exist_ok=True)
+    demo_path = "demo_videos/demo.mp4"
 
-    if not demo_path.exists():
+    if not os.path.exists(demo_path):
+        url = "https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4"  # replace with your demo URL
         try:
-            st.info("📥 Downloading demo video...")
-            url = "https://drive.google.com/file/d/1gEc35loI8_LhGEUCy2-lTRYkjpOl9t92/view?usp=sharing"
             urllib.request.urlretrieve(url, demo_path)
         except Exception as e:
-            st.error(f"❌ Failed to download demo video: {e}")
+            print("Error downloading demo video:", e)
             return None
-
-    return str(demo_path)
+    
+    return demo_path
     
 # ========= IMAGE DETECTION =========
 def process_image(image_file, output_path="outputs/processed_image.jpg"):
@@ -584,6 +582,7 @@ elif st.session_state.page == "📘 Project Info":
         """)
 
     st.markdown("<div class='footer'>🚀 Project Info Section Complete</div>", unsafe_allow_html=True)
+
 
 
 
