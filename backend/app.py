@@ -370,18 +370,19 @@ if st.session_state.page == "🏠 Home":
 
 elif st.session_state.page == "🎬 Demo Video":
     st.header("🎬 Demo Video Detection")
-    demo_path = get_demo_video()
 
-    if demo_path:  # ✅ safer check
+    demo_path = "demo_videos/traffic_light_demo.mp4"  # use your local file
+
+    if not os.path.exists(demo_path):
+        st.error("⚠️ Demo video not found. Please add it to demo_videos/traffic_light_demo.mp4")
+    else:
         # Show original demo
         st.video(demo_path)
 
         if st.button("▶️ Run Detection on Demo"):
             with st.spinner("Processing demo video..."):
-                os.makedirs("outputs", exist_ok=True)  # ✅ ensure outputs dir exists
                 output_path = "outputs/demo_output.mp4"
                 ok = process_video(demo_path, output_path)
-
                 if ok and os.path.exists(output_path):
                     st.success("✅ Detection completed!")
                     st.video(output_path)
@@ -389,10 +390,6 @@ elif st.session_state.page == "🎬 Demo Video":
                         st.download_button("⬇️ Download Processed Demo", f, file_name="processed_demo.mp4")
                 else:
                     st.error("❌ Something went wrong while processing the demo video.")
-    else:
-        st.error("❌ Demo video not available.")
-
-
 
 
 elif st.session_state.page == "📥 Upload Video":
@@ -582,6 +579,7 @@ elif st.session_state.page == "📘 Project Info":
         """)
 
     st.markdown("<div class='footer'>🚀 Project Info Section Complete</div>", unsafe_allow_html=True)
+
 
 
 
