@@ -371,13 +371,16 @@ if st.session_state.page == "🏠 Home":
 elif st.session_state.page == "🎬 Demo Video":
     st.header("🎬 Demo Video Detection")
 
-    demo_path = "demo_videos/traffic_light_demo.mp4"  # use your local file
-
-    if not os.path.exists(demo_path):
-        st.error("⚠️ Demo video not found. Please add it to demo_videos/traffic_light_demo.mp4")
+    # repo root
+    ROOT_DIR = Path(__file__).resolve().parents[1]  
+    
+    # demo video path
+    demo_path = ROOT_DIR / "demo_videos" / "traffic_light_demo.mp4"
+    
+    if not demo_path.exists():
+        st.error(f"Demo video not found at {demo_path}")
     else:
-        # Show original demo
-        st.video(demo_path)
+        st.video(str(demo_path))
 
         if st.button("▶️ Run Detection on Demo"):
             with st.spinner("Processing demo video..."):
@@ -579,6 +582,7 @@ elif st.session_state.page == "📘 Project Info":
         """)
 
     st.markdown("<div class='footer'>🚀 Project Info Section Complete</div>", unsafe_allow_html=True)
+
 
 
 
