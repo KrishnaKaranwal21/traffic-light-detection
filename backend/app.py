@@ -7,6 +7,8 @@ from detector import process_video
 import av
 from streamlit_webrtc import webrtc_streamer, WebRtcMode, RTCConfiguration, VideoProcessorBase
 from utils import get_demo_video
+import urllib.request
+from pathlib import Path
 
 # ========== WEBRTC CONFIG ==========
 RTC_CONFIGURATION = RTCConfiguration({
@@ -569,6 +571,7 @@ elif st.session_state.page == "📘 Project Info":
         """)
 
     st.markdown("<div class='footer'>🚀 Project Info Section Complete</div>", unsafe_allow_html=True)
+
 
 
 
