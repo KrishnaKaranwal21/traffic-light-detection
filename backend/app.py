@@ -7,6 +7,18 @@ from detector import process_video  # your real video detection function
 import av
 from streamlit_webrtc import webrtc_streamer, WebRtcMode, RTCConfiguration, VideoProcessorBase
 
+# ========== WEBRTC CONFIG ==========
+RTC_CONFIGURATION = RTCConfiguration({
+    "iceServers": [
+        {"urls": ["stun:stun.l.google.com:19302"]},   # free STUN
+        {
+            "urls": ["turn:relay1.expressturn.com:3478"],
+            "username": "expressturn",
+            "credential": "expressturn"
+        }  # free TURN (for demo use only, not reliable for prod)
+    ]
+})
+
 # ========= PAGE CONFIG =========
 st.set_page_config(
     page_title="🚦 Traffic Light Detector",
@@ -544,4 +556,5 @@ elif st.session_state.page == "📘 Project Info":
         """)
 
     st.markdown("<div class='footer'>🚀 Project Info Section Complete</div>", unsafe_allow_html=True)
+
 
