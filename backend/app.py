@@ -6,9 +6,7 @@ import numpy as np
 from detector import process_video 
 import av
 from streamlit_webrtc import webrtc_streamer, WebRtcMode, RTCConfiguration, VideoProcessorBase
-from utils import get_demo_video
 import urllib.request
-from pathlib import Path
 
 # ========== WEBRTC CONFIG ==========
 RTC_CONFIGURATION = RTCConfiguration({
@@ -152,15 +150,16 @@ def run_detection(video_path, output_path="outputs/processed_output.mp4"):
     ok = process_video(video_path, output_path)
     return output_path if ok else None
 
-# =========== Demo Video =============
+# ---------------- DEMO VIDEO HELPER ----------------
 def get_demo_video():
     demo_dir = Path("demo_videos")
     demo_dir.mkdir(exist_ok=True)
     demo_path = demo_dir / "traffic_light_demo.mp4"
 
     if not demo_path.exists():
-        url = "https://drive.google.com/file/d/1gEc35loI8_LhGEUCy2-lTRYkjpOl9t92/view?usp=sharing"
-        print("Downloading demo video from:", url)
+        # 🔗 Replace with your real demo video link
+        url = "https://YOUR-LINK-HERE/traffic_light_demo.mp4"
+        import urllib.request
         urllib.request.urlretrieve(url, demo_path)
 
     return str(demo_path)
@@ -571,6 +570,7 @@ elif st.session_state.page == "📘 Project Info":
         """)
 
     st.markdown("<div class='footer'>🚀 Project Info Section Complete</div>", unsafe_allow_html=True)
+
 
 
 
