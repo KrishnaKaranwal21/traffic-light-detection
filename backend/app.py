@@ -371,16 +371,21 @@ elif st.session_state.page == "🎬 Demo Video":
     st.header("🎬 Demo Video Detection")
     demo_path = get_demo_video()
 
+    # Preview the demo video before running detection
     st.video(demo_path)
 
     if st.button("▶️ Run Detection on Demo"):
         with st.spinner("Processing demo video..."):
-            output_path = run_detection(demo_path, "outputs/demo_output.mp4")
-            if output_path and os.path.exists(output_path):
+            output_path = "outputs/demo_output.mp4"
+            ok = process_video(demo_path, output_path)
+            if ok and os.path.exists(output_path):
                 st.success("✅ Detection completed!")
                 st.video(output_path)
                 with open(output_path, "rb") as f:
                     st.download_button("⬇️ Download Processed Demo", f, file_name="processed_demo.mp4")
+            else:
+                st.error("❌ Something went wrong while processing the demo video.")
+
 
 
 elif st.session_state.page == "📥 Upload Video":
@@ -570,6 +575,7 @@ elif st.session_state.page == "📘 Project Info":
         """)
 
     st.markdown("<div class='footer'>🚀 Project Info Section Complete</div>", unsafe_allow_html=True)
+
 
 
 
