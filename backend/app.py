@@ -157,10 +157,13 @@ def get_demo_video():
     demo_path = demo_dir / "traffic_light_demo.mp4"
 
     if not demo_path.exists():
-        # 🔗 Replace with your real demo video link
-        url = "https://YOUR-LINK-HERE/traffic_light_demo.mp4"
-        import urllib.request
-        urllib.request.urlretrieve(url, demo_path)
+        try:
+            st.info("📥 Downloading demo video...")
+            url = "https://drive.google.com/file/d/1gEc35loI8_LhGEUCy2-lTRYkjpOl9t92/view?usp=sharing"
+            urllib.request.urlretrieve(url, demo_path)
+        except Exception as e:
+            st.error(f"❌ Failed to download demo video: {e}")
+            return None
 
     return str(demo_path)
     
@@ -371,20 +374,26 @@ elif st.session_state.page == "🎬 Demo Video":
     st.header("🎬 Demo Video Detection")
     demo_path = get_demo_video()
 
-    # Show original demo
-    st.video(demo_path)
+    if demo_path:  # ✅ safer check
+        # Show original demo
+        st.video(demo_path)
 
-    if st.button("▶️ Run Detection on Demo"):
-        with st.spinner("Processing demo video..."):
-            output_path = "outputs/demo_output.mp4"
-            ok = process_video(demo_path, output_path)
-            if ok and os.path.exists(output_path):
-                st.success("✅ Detection completed!")
-                st.video(output_path)
-                with open(output_path, "rb") as f:
-                    st.download_button("⬇️ Download Processed Demo", f, file_name="processed_demo.mp4")
-            else:
-                st.error("❌ Something went wrong while processing the demo video.")
+        if st.button("▶️ Run Detection on Demo"):
+            with st.spinner("Processing demo video..."):
+                os.makedirs("outputs", exist_ok=True)  # ✅ ensure outputs dir exists
+                output_path = "outputs/demo_output.mp4"
+                ok = process_video(demo_path, output_path)
+
+                if ok and os.path.exists(output_path):
+                    st.success("✅ Detection completed!")
+                    st.video(output_path)
+                    with open(output_path, "rb") as f:
+                        st.download_button("⬇️ Download Processed Demo", f, file_name="processed_demo.mp4")
+                else:
+                    st.error("❌ Something went wrong while processing the demo video.")
+    else:
+        st.error("❌ Demo video not available.")
+
 
 
 
@@ -575,8 +584,6 @@ elif st.session_state.page == "📘 Project Info":
         """)
 
     st.markdown("<div class='footer'>🚀 Project Info Section Complete</div>", unsafe_allow_html=True)
-
-
 
 
 
