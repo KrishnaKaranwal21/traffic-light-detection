@@ -371,7 +371,7 @@ elif st.session_state.page == "🎬 Demo Video":
     st.header("🎬 Demo Video Detection")
     demo_path = get_demo_video()
 
-    # Preview the demo video before running detection
+    # Show original demo
     st.video(demo_path)
 
     if st.button("▶️ Run Detection on Demo"):
@@ -575,6 +575,7 @@ elif st.session_state.page == "📘 Project Info":
         """)
 
     st.markdown("<div class='footer'>🚀 Project Info Section Complete</div>", unsafe_allow_html=True)
+
 
 
 
