@@ -10,12 +10,12 @@ from streamlit_webrtc import webrtc_streamer, WebRtcMode, RTCConfiguration, Vide
 # ========== WEBRTC CONFIG ==========
 RTC_CONFIGURATION = RTCConfiguration({
     "iceServers": [
-        {"urls": ["stun:stun.l.google.com:19302"]},   # free STUN
+        {"urls": ["stun:stun.l.google.com:19302"]},
         {
             "urls": ["turn:relay1.expressturn.com:3478"],
             "username": "expressturn",
             "credential": "expressturn"
-        }  # free TURN (for demo use only, not reliable for prod)
+        }
     ]
 })
 
@@ -556,5 +556,6 @@ elif st.session_state.page == "📘 Project Info":
         """)
 
     st.markdown("<div class='footer'>🚀 Project Info Section Complete</div>", unsafe_allow_html=True)
+
 
 
