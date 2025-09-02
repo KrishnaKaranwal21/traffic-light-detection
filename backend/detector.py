@@ -2,6 +2,7 @@ import os
 import cv2
 import numpy as np
 import time
+import av  # ✅ use PyAV instead of cv2.VideoCapture
 
 # ---------------- CONFIG ----------------
 COLOR_RANGES = {
@@ -76,10 +77,10 @@ def get_active_color(cluster, last_color=None):
     return largest[0]
 
 
-# ---------------- MAIN PROCESSOR (no GUI) ----------------
+# ---------------- MAIN PROCESSOR (PyAV version) ----------------
 def process_video(input_path: str, output_path: str) -> bool:
     """
-    Reads a video, runs your traffic-light detector, draws boxes/labels/fps,
+    Reads a video using PyAV, runs the traffic-light detector,
     and writes a processed video to 'output_path'.
 
     Returns True on success, False otherwise.
@@ -89,41 +90,25 @@ def process_video(input_path: str, output_path: str) -> bool:
             print(f"[process_video] Input does not exist: {input_path}")
             return False
 
-        # Ensure output folder exists
         out_dir = os.path.dirname(output_path) or "."
         os.makedirs(out_dir, exist_ok=True)
 
-        cap = cv2.VideoCapture(input_path)
-        if not cap.isOpened():
-            print(f"[process_video] Could not open video: {input_path}")
-            return False
+        container = av.open(input_path)
+        stream = container.streams.video[0]
 
-        # Read one frame early to guarantee width/height != 0 for VideoWriter
-        ret, first_frame = cap.read()
-        if not ret or first_frame is None:
-            print("[process_video] Could not read first frame.")
-            cap.release()
-            return False
+        width = stream.codec_context.width
+        height = stream.codec_context.height
+        fps = float(stream.average_rate) if stream.average_rate else 25.0
 
-        height, width = first_frame.shape[:2]
-
-        # FPS can be 0 on some files; pick a safe fallback
-        fps = cap.get(cv2.CAP_PROP_FPS)
-        if fps is None or fps <= 1:
-            fps = 25.0
-
-        # Try mp4 writer (works well on Windows; for Cloud, we only serve as download)
         fourcc = cv2.VideoWriter_fourcc(*"mp4v")
-        writer = cv2.VideoWriter(output_path, fourcc, float(fps), (width, height))
+        writer = cv2.VideoWriter(output_path, fourcc, fps, (width, height))
         if not writer.isOpened():
             print("[process_video] VideoWriter failed to open. Aborting.")
-            cap.release()
             return False
 
         prev_frame_time = time.time()
-        last_colors = {}  # remembers last color per TL id
+        last_colors = {}
 
-        # ---- process first frame then the rest ----
         def draw_overlays(frame, fps_val):
             detections = detect_light_blobs(frame)
             clusters = cluster_lights(detections)
@@ -163,7 +148,6 @@ def process_video(input_path: str, output_path: str) -> bool:
                     2
                 )
 
-            # draw FPS
             cv2.putText(
                 frame, f"FPS: {int(fps_val)}",
                 (frame.shape[1] - 160, 30),
@@ -172,18 +156,8 @@ def process_video(input_path: str, output_path: str) -> bool:
             )
             return frame
 
-        # first frame
-        now = time.time()
-        fps_est = 1.0 / max(1e-6, (now - prev_frame_time))
-        prev_frame_time = now
-        frame = draw_overlays(first_frame, fps_est)
-        writer.write(frame)
-
-        # remaining frames
-        while True:
-            ret, frame = cap.read()
-            if not ret or frame is None:
-                break
+        for frame_av in container.decode(video=0):
+            frame = frame_av.to_ndarray(format="bgr24")
             now = time.time()
             fps_est = 1.0 / max(1e-6, (now - prev_frame_time))
             prev_frame_time = now
@@ -191,8 +165,8 @@ def process_video(input_path: str, output_path: str) -> bool:
             frame = draw_overlays(frame, fps_est)
             writer.write(frame)
 
-        cap.release()
         writer.release()
+        container.close()
 
         ok = os.path.isfile(output_path) and os.path.getsize(output_path) > 0
         if not ok:
