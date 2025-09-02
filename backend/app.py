@@ -342,7 +342,7 @@ if st.session_state.page == "🏠 Home":
 
 elif st.session_state.page == "🎬 Demo Video":
     st.header("🎬 Demo Video Detection")
-    demo_path = Path("demo_videos/traffic_light_demo.mp4")
+    demo_path = Path(__file__).parent.parent / "demo_videos" / "traffic_light_demo.mp4"
 
     if demo_path.exists():
         st.video(str(demo_path))
@@ -544,3 +544,4 @@ elif st.session_state.page == "📘 Project Info":
         """)
 
     st.markdown("<div class='footer'>🚀 Project Info Section Complete</div>", unsafe_allow_html=True)
+
